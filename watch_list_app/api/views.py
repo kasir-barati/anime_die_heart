@@ -41,11 +41,16 @@ def movie_details(req: Request, id: int) -> Response:
 
 @api_view(["POST"])
 def upload_movie(req: Request) -> Response:
-    if 'file' not in req.FILES.file:
+    if 'file' not in req.FILES:
         return bad_request(req, 'Please select a file')
 
     serialized_movie = UploadMovieSerializer(data=req.data)
-    sent_file: File = req.FILES.file
+    """
+    Wrong usage
+    <MultiValueDict: {'file': [<InMemoryUploadedFile: Untitled.png (image/png)>]}>
+    req.FILES.file
+    """
+    sent_file: File = req.FILES['file']
     save_uploaded_file(sent_file)
 
     # Timezone is really a hard thing to deal. So I decided to keep it in zero timezone
@@ -59,7 +64,7 @@ def upload_movie(req: Request) -> Response:
 
     serialized_movie = MovieSerializer(created_move)
     return Response(
-        serialized_movie, 
+        serialized_movie.data, 
         status=status.HTTP_201_CREATED
     )
 
