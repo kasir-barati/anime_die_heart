@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.indexes import Index
 
 # Create your models here.
 class Movie(models.Model):
@@ -8,6 +9,9 @@ class Movie(models.Model):
 
     class Meta:
         db_table: str = 'movies'
+        indexes: Index = [
+            models.Index(fields=['name'], name='movie_name_index')
+        ]
 
     def __str__(self):
         return self.name
