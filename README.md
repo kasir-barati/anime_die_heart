@@ -41,9 +41,19 @@
 
 - We have 2 option:
   - Function base view
+    - `@api_view(["POST"])`
+      - A simple decorator that wrap your function based views to ensure they receive an instance of `Request` (rather than the usual Django `HttpRequest`)
+      - Return a `Response` (instead of a Django `HttpResponse`)
+      - A list of HTTP methods that your view should respond to.
   - Class base view
 - Read `watch_list_app/views.py` for more information
 - As you realized this is too much effort to do a simple task, Besides it is numbness routing and a sterile repetitive task, I guess we would become heartless after a while. So if you wanted to start a quest to find a better solution and get rid of this miserable degradation situation probably you should try Django REST framework. It inspires you.
+- File upload:
+  - MultiPartParser
+    - For web-based uploads, or for native clients with multipart upload support.
+  - FileUploadParser
+    - For native clients that can upload the file as a raw data request.
+  - [Reference](https://roytuts.com/single-and-multiple-files-upload-example-in-django-rest-api/)
 
 # Django REST framework
 
@@ -58,7 +68,9 @@
   ```
 - Serialization: Complex data -> Python Dictionary -> JSON
   - Serialization types
+  - Convert complex data such as `querysets` and `model instances` to native Python datatypes.
 - Deserialization: JSON -> Python Dictionary -> Complex data
+- It includes a number of built in Parser classes, that allow you to accept requests with various media types.
 
 # Models in Django
 
