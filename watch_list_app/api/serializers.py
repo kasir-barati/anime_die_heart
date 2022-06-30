@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.serializers import FileField
 
 
 class MovieSerializer(serializers.Serializer):
@@ -7,3 +8,9 @@ class MovieSerializer(serializers.Serializer):
     description: str = serializers.CharField(required=True)
     active: bool = serializers.BooleanField(required=False)
 
+
+class UploadMovieSerializer(serializers.Serializer):
+    file: FileField = serializers.FileField(
+        allow_empty_file=False,
+        max_length=None
+    )
