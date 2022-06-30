@@ -20,3 +20,20 @@ def movie_list(request):
     response = JsonResponse(response)
     return response
 
+
+def movie_details(request, id):
+    movie = Movie.objects.get(pk=id)
+    # This print will prints "Get the right job in Germany" because of __str__
+    print(movie)
+    """
+    Wrong usage:
+    movie = vars(movie)
+    """
+    # Or I could define a custom method in the class named serialize response
+    movie = {
+        "name": movie.name,
+        "description": movie.description,
+        "active": movie.active
+    }
+    response = JsonResponse(movie)
+    return response

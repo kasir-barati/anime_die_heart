@@ -30,3 +30,4 @@
   - Function base view
   - Class base view
 - Read `watch_list_app/views.py` for more information
+- As you realized this is too much effort to do a simple task. Thats why we use Django REST framework
