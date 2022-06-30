@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # FIXME: IDK if there is a better way to do this. I do not like to rely on strings
+    path('movies/', include('watch_list_app.urls')),
 ]

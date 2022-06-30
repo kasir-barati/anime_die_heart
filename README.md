@@ -23,3 +23,10 @@
 - python3 manage.py makemigrations
 - python3 manage.py migrate
 - Then register it in the `admin.py`: `admin.site.register(Movie)`
+
+# [Dealing with views]()
+
+- We have 2 option:
+  - Function base view
+  - Class base view
+- Read `watch_list_app/views.py` for more information
