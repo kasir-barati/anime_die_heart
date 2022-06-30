@@ -39,6 +39,13 @@ def movie_details(req: Request, id: int) -> Response:
     return Response(serialized_movie.data)
 
 
+@api_view(["GET"])
+def stream_movie(req: Request, id: int):
+    movie = Movie.objects.get(pk=id)
+    
+    pass
+
+
 @api_view(["POST"])
 def upload_movie(req: Request) -> Response:
     if 'file' not in req.FILES:
