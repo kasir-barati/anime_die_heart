@@ -1,3 +1,7 @@
+# What is Django?
+
+## the Python Web framework for perfectionists with deadlines.
+
 # Run app
 
 - python3 manage.py runserver
@@ -55,3 +59,9 @@
 - Serialization: Complex data -> Python Dictionary -> JSON
   - Serialization types
 - Deserialization: JSON -> Python Dictionary -> Complex data
+
+# Models in Django
+
+- [Fields](https://docs.djangoproject.com/en/4.0/ref/models/fields/)
+
+https://github.com/gnulnx/django-mongolog
