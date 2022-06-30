@@ -6,5 +6,8 @@ class Movie(models.Model):
     description: str = models.CharField(max_length=400, null=False)
     active: bool = models.BooleanField(default=True)
 
+    class Meta:
+        db_table: str = 'movies'
+
     def __str__(self):
         return self.name
