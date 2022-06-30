@@ -1,3 +1,12 @@
+# Run app
+
+- python3 manage.py runserver
+- I still do not know how to recreate the venv since it should be ignored by git
+- endpoints:
+  - http://localhost:8000/admin
+  - http://localhost:8000/movies
+  - http://localhost:8000/movies/:id
+
 # Steps to create project
 
 - mkdir anime_die_heart
@@ -30,4 +39,4 @@
   - Function base view
   - Class base view
 - Read `watch_list_app/views.py` for more information
-- As you realized this is too much effort to do a simple task. Thats why we use Django REST framework
+- As you realized this is too much effort to do a simple task, Besides it is numbness routing and a sterile repetitive task, I guess we would become heartless after a while. So if you wanted to start a quest to find a better solution and get rid of this miserable degradation situation probably you should try Django REST framework. It inspires you.
