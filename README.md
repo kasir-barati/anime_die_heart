@@ -40,3 +40,18 @@
   - Class base view
 - Read `watch_list_app/views.py` for more information
 - As you realized this is too much effort to do a simple task, Besides it is numbness routing and a sterile repetitive task, I guess we would become heartless after a while. So if you wanted to start a quest to find a better solution and get rid of this miserable degradation situation probably you should try Django REST framework. It inspires you.
+
+# Django REST framework
+
+- pip3 install djangorestframework
+- Open `settings.py` and do this:
+  ```py
+  INSTALLED_APPS = [
+    # ...
+    'rest_framework'
+    # ...
+  ]
+  ```
+- Serialization: Complex data -> Python Dictionary -> JSON
+  - Serialization types
+- Deserialization: JSON -> Python Dictionary -> Complex data
