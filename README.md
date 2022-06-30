@@ -1,3 +1,7 @@
+# Failed
+  - If you wanna use **python3** with `django-mongodb-engine` package I should warn you that you may need to use python 2 instead of version 3.
+  - Read more in this [Stackoverflow Q&A](https://stackoverflow.com/questions/29874628/)
+
 # What is Django?
 
 ## the Python Web framework for perfectionists with deadlines.
@@ -118,8 +122,6 @@
           }
       }
       ```
-- Failed. If you wanna use python3 this package cannot help you.
-  - Read more in this [Stackoverflow Q&A](https://stackoverflow.com/questions/29874628/)
 
 # Models in Django
 
