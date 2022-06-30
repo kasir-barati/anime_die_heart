@@ -16,3 +16,10 @@
   - python3 manage.py migrate
 - Now we create super user:
   - python3 manage.py createsuperuser
+
+# [Dealing with models](https://docs.djangoproject.com/en/4.0/ref/models/)
+
+- Change the `models.py` as you wanted
+- python3 manage.py makemigrations
+- python3 manage.py migrate
+- Then register it in the `admin.py`: `admin.site.register(Movie)`
