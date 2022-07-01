@@ -1,4 +1,5 @@
 from django.core.files import File
+from .random_string import random_string
 
 def save_uploaded_file(file: File):
     """
@@ -11,7 +12,8 @@ def save_uploaded_file(file: File):
     '+'   open a disk file for updating (reading and writing)
     'U'   universal newline mode (deprecated)
     """
-    with open(file.name, 'wb+') as destination_file:
+    random_file_name = f"{random_string(20)}_{file.name}"
+    with open(random_file_name, 'wb+') as destination_file:
         """
         Looping over UploadedFile.chunks() instead of using read()
         ensures that large files don’t overwhelm your system’s memory.
