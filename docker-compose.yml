@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  # django:
+  #   image: anime_die_heart:latest
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: anime_die_heart_django
+  #   hostname: django
+  #   ports:
+  #     - 8000:8000
+  #   volumes:
+  #     - type: bind
+  #       target: /app
+  #       source: .
+  #       volume:
+  #         nocopy: true
+  #   env_file:
+  #     - .mongodb.env
+  #   restart: always
+  #   # command: python3 manage.py runserver
+  #   command: python manage.py runserver 0.0.0.0:8000
+
+  mongo:
+    image: mongo:4.4.14-rc0-focal
+    container_name: anime_die_heart_mongodb
+    hostname: mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_volume:/data/db
+    env_file:
+      - .mongodb.env
+    restart: always
+
+volumes:
+  mongodb_volume:
+  django_volume:
