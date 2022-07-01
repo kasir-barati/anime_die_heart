@@ -20,6 +20,11 @@
   - Do not use GridFS if:
     - The content of the entire file should be updated atomically.
     - If your files are all smaller than the 16 MB BSON Document Size limit, consider storing each file in a single document instead of using GridFS.
+  - I install djongo to work with MongoDB in django.
+    - First I forced to change pymongo version.
+      - `pip install pymongo==3.12.3`
+        - We do not need to uninstall the previous one. Just execute the command.
+      - Read more in [this stackoverflow Q&A](https://stackoverflow.com/a/70737146/8784518)
 
 # What is Django?
 
@@ -178,3 +183,18 @@ https://github.com/gnulnx/django-mongolog
       - Then exec into container: `docker exec -it anime_die_heart_mongodb bash`
       - `mongo -u python -p student --authenticationDatabase admin`
       - **Worked**
+
+# Start app in dev env:
+
+1. `cp .mongodb.env.example .mongodb.env`
+2. `docker-compose up -d`
+3. `virtualenv venv`
+4. `source ./venv/bin/activate`
+5. `pip3 install -r ./requirements.txt`
+6. `python3 manage.py migrate`
+7. `python3 manage.py runserver`
+
+- To deactivate virtual env: `deactivate`
+- To remove docker container:
+  - `docker-compose down --remove-orphans`
+  - `docker volume rm anime_die_heart_mongodb_volume`
