@@ -1,16 +1,16 @@
 from rest_framework import serializers
-from rest_framework.serializers import FileField
+from djongo.models import ObjectIdField
+from ..models import MovieFile
 
 
 class MovieSerializer(serializers.Serializer):
-    id: int = serializers.IntegerField(read_only=True, required=False)
+    _id: ObjectIdField = serializers.CharField(read_only=True, required=False)
     name: str = serializers.CharField(required=True)
     description: str = serializers.CharField(required=True)
     active: bool = serializers.BooleanField(required=False)
 
 
-class UploadMovieSerializer(serializers.Serializer):
-    file: FileField = serializers.FileField(
-        allow_empty_file=False,
-        max_length=None
-    )
+class UploadMovieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovieFile
+        fields = '__all__'

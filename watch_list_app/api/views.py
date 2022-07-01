@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from ..models import Movie
+from ..models import MovieFile
 from .serializers import MovieSerializer
 from .serializers import UploadMovieSerializer
 """
@@ -58,7 +59,8 @@ def upload_movie(req: Request) -> Response:
     req.FILES.file
     """
     sent_file: File = req.FILES['file']
-    save_uploaded_file(sent_file)
+    MovieFile.objects.create(file=sent_file)
+    # save_uploaded_file(sent_file)
 
     # Timezone is really a hard thing to deal. So I decided to keep it in zero timezone
     now = datetime.datetime.now(tz=ZoneInfo("Etc/GMT"))
