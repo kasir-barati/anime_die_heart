@@ -9,8 +9,10 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
 from pathlib import Path
+import os
+from django.core.exceptions import ImproperlyConfigured
+from shared.read_env import read_env_files
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +28,16 @@ SECRET_KEY = 'django-insecure-77hptzt_iz9g#0(5jxv&f%+@klssg@si()%3w)3#x@$$g$9n^u
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+
+def get_env_value(env_variable):
+    try:
+        path = os.path.join(os.getcwd(), '.mongodb.env')
+        env_value = read_env_files([path])[env_variable]
+        return env_value
+    except KeyError:
+        error_msg = f'Set the {env_variable} environment variable'
+        raise ImproperlyConfigured(error_msg)
 
 
 # Application definition
@@ -79,6 +91,18 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'mongodb': {
+        'ENGINE': 'djongo',
+        'NAME': get_env_value('MONGODB_DATABASE'),
+        'CLIENT': {
+            'host': 'localhost',
+            'port': 27017,
+            'username': get_env_value('MONGODB_USERNAME'),
+            'password': get_env_value('MONGODB_PASSWORD'),
+            'authSource': 'admin',
+            'authMechanism': 'SCRAM-SHA-1'
+        } 
     }
 }
 
