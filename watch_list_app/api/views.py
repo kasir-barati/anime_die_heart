@@ -58,14 +58,15 @@ def upload_movie(req: Request) -> Response:
     req.FILES.file
     """
     sent_file: File = req.FILES['file']
-    save_uploaded_file(sent_file)
+    saved_file_name = save_uploaded_file(sent_file)
 
     # Timezone is really a hard thing to deal. So I decided to keep it in zero timezone
     now = datetime.datetime.now(tz=ZoneInfo("Etc/GMT"))
     created_move = Movie.objects.create(
         name=sent_file.name,
         description=f"File uploaded at {now}",
-        active=True
+        active=True,
+        file_name=saved_file_name
     )
     created_move.save()
 

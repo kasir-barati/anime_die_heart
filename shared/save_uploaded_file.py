@@ -1,7 +1,7 @@
 from django.core.files import File
 from .random_string import random_string
 
-def save_uploaded_file(file: File):
+def save_uploaded_file(file: File) -> str:
     """
     'r'   open for reading (default)
     'w'   open for writing, truncating the file first
@@ -19,3 +19,5 @@ def save_uploaded_file(file: File):
         ensures that large files don’t overwhelm your system’s memory.
         """
         [destination_file.write(chunk) for chunk in file.chunks()]
+    
+    return random_file_name

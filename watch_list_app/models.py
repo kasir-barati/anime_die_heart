@@ -6,6 +6,7 @@ class Movie(models.Model):
     name: str = models.CharField(max_length=100, null=False)
     description: str = models.CharField(max_length=400, null=False)
     active: bool = models.BooleanField(default=True)
+    file_name: str = models.CharField(max_length=255, null=False)
 
     class Meta:
         db_table: str = 'movies'
