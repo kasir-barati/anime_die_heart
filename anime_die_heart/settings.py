@@ -16,6 +16,7 @@ from shared.read_env import read_env_files
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_URL = 'http://localhost:8000/'
 
 
 # Quick-start development settings - unsuitable for production
@@ -89,22 +90,23 @@ WSGI_APPLICATION = 'anime_die_heart.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    },
-    'mongodb': {
         'ENGINE': 'djongo',
-        'NAME': get_env_value('MONGODB_DATABASE'),
+        'NAME': get_env_value('MONGO_INITDB_DATABASE'),
         'CLIENT': {
-            'host': 'localhost',
+            'host': '0.0.0.0',
             'port': 27017,
-            'username': get_env_value('MONGODB_USERNAME'),
-            'password': get_env_value('MONGODB_PASSWORD'),
+            'username': get_env_value('MONGO_INITDB_ROOT_USERNAME'),
+            'password': get_env_value('MONGO_INITDB_ROOT_PASSWORD'),
             'authSource': 'admin',
             'authMechanism': 'SCRAM-SHA-1'
         } 
     }
 }
+
+
+DEFAULT_FILE_STORAGE = 'mongo_storage.storage.GridFSStorage'
+GRIDFS_DATABASE = 'anime_videos'
+UPLOADED_FILES_USE_URL = True
 
 
 # Password validation
