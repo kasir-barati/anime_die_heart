@@ -1,4 +1,7 @@
 from rest_framework.exceptions import bad_request
+from django.http import StreamingHttpResponse
+from wsgiref.util import FileWrapper
+from rest_framework.exceptions import NotFound
 from zoneinfo import ZoneInfo
 from rest_framework import status
 from django.core.files import File
@@ -24,7 +27,7 @@ Note: If you do not use this decorator it won't convert your
 python Dictionary into a valid JSON data
 """
 @api_view(["GET"])
-def movie_list(req: Request) -> Response:
+def movies_list(req: Request) -> Response:
     movies = Movie.objects.all()
     serialized_movies = MovieSerializer(movies, many=True)
 
@@ -34,16 +37,42 @@ def movie_list(req: Request) -> Response:
 @api_view(["GET"])
 def movie_details(req: Request, id: int) -> Response:
     movie = Movie.objects.get(pk=id)
+
+    if movie == None:
+        raise NotFound(detail="Movie not found")
+
     serialized_movie = MovieSerializer(movie)
 
     return Response(serialized_movie.data)
 
 
 @api_view(["GET"])
-def stream_movie(req: Request, id: int):
+def stream_movie(req: Request, id: int) -> StreamingHttpResponse:
     movie = Movie.objects.get(pk=id)
     
-    pass
+    if movie == None:
+        raise NotFound(detail="Movie not found")
+
+    file_binary = open(movie.file_name, "rb")
+    converted_iterable_file = FileWrapper(file_binary)
+    response = StreamingHttpResponse(converted_iterable_file)
+
+    return response
+
+
+@api_view(["PATCH"])
+def update_created_movie(req: Request, id: int) -> Response:
+    serialized_movie = MovieSerializer(req.body)
+    movie = Movie.objects.filter(pk=id).update(
+        name=serialized_movie.name,
+        description=serialized_movie.description,
+        active=serialized_movie.active
+    )
+    
+    serialized_movie = MovieSerializer(movie)
+    response = Response(serialized_movie.data)
+
+    return response
 
 
 @api_view(["POST"])
