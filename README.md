@@ -223,3 +223,9 @@ https://github.com/gnulnx/django-mongolog
       - `return HttpResponseRedirect(reverse('movies-list'))`
         - Here we also can pass arguments.
     - We can also pass additional arguments to the view too.
+  - Note that in this approach we are restricted to have one endpoint for each view. We cannot define multiple view for same endpoint. We cannot have this:
+    ```py
+    path('<int:id>', update_created_movie, name='update-created-movie'),
+    path('<int:id>', movie_details),
+    ```
+    Which their HTTP method is different.
