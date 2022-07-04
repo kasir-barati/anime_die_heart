@@ -20,8 +20,8 @@ https://discord.com/channels/686069011481362462/834654239049384036/9926826982818
 urlpatterns = [
     path('', movies_list, name='movies-list'),
     # BUG: You cannot do this in the function based view. more info in those links
-    path('<int:id>', update_created_movie, name='update-created-movie'),
-    path('<int:id>', movie_details),
+    path('<int:id>/updated-created-movie', update_created_movie, name='update-created-movie'),
+    path('<int:id>/movie-details', movie_details, name='movie-details'),
     path('upload', upload_movie),
     path('stream', stream_movie)
 ]

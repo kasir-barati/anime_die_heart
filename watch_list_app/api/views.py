@@ -62,17 +62,23 @@ def stream_movie(req: Request, id: int) -> StreamingHttpResponse:
 
 @api_view(["PATCH"])
 def update_created_movie(req: Request, id: int) -> Response:
-    serialized_movie = MovieSerializer(req.body)
-    movie = Movie.objects.filter(pk=id).update(
-        name=serialized_movie.name,
-        description=serialized_movie.description,
-        active=serialized_movie.active
-    )
-    
-    serialized_movie = MovieSerializer(movie)
-    response = Response(serialized_movie.data)
+    """
+    Wrong usage:
+    This is note NestJS
+    - req.body
+    - serialized_request_body = MovieSerializer(req.data)
+    """
+    # serialized_request_body = UpdateCreatedMovie(data=req.data)
+    # movie = Movie.objects.filter(pk=id).update(
+    #     name=serialized_request_body.name,
+    #     description=serialized_request_body.description,
+    #     active=serialized_request_body.active
+    # )
 
-    return response
+    # serialized_movie = MovieSerializer(movie)
+    # response = Response(serialized_movie.data)
+    # return response
+    pass
 
 
 @api_view(["POST"])
