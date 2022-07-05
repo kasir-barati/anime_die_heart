@@ -56,13 +56,15 @@ class GetUpdateDeleteWatchList(APIView):
         """
         serialized_request_body = MovieSerializer(data=req.data, partial=True)
         serialized_request_body.is_valid(raise_exception=True)
-        movie = self.__movie_service.update_movie(
+
+        self.__movie_service.update_movie(
             id, 
             serialized_request_body.data
         )
 
-        serialized_movie = MovieSerializer(movie)
-        return Response(serialized_movie.data)
+        # serialized_movie = MovieSerializer(movie)
+        # return Response(serialized_movie.data)
+        return Response({"id": id, "detail": "Updated"})
     
     def delete(self, req: Request, id: int):
         movie = self.__movie_service.delete_movie(id)

@@ -13,12 +13,19 @@ class MovieRepository:
 
     """
     TODO: find a way to annotate "movie" automatically
+    FIXME: Here also we have a bad time. I do not know how to decouple
+    Service layer from the serializer layer and at the same time be
+    strongly typed. Based on onion architecture I should not couple
+    my service layer to serializer. BTW one way is to use TypedDict
+    which is too much maybe.
+
+    FIXME: No way to return updated record?
     """
-    def update_by_id(self, id: int, movie,) -> Movie:
+    def update_by_id(self, id: int, movie,) -> None:
         """
         The same goes ont here. I used get over filter for simplicity
         """
-        updated_movies_count, movie = Movie.objects.filter(pk=id).update(
+        updated_movies_count = Movie.objects.filter(pk=id).update(
             name=movie['name'],
             active=movie['active'],
             description=movie['description'],
@@ -33,7 +40,7 @@ class MovieRepository:
         """
         assert updated_movies_count == 1, "Too many - more than one - movie has been updated"
         
-        return movie
+        return
 
     def delete_by_id(self, id: int,) -> None|NoReturn:
         """

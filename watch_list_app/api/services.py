@@ -46,17 +46,19 @@ class MovieService:
     should not be dependent to the View/Controller layer
 
     TODO: find a way to annotate "movie" automatically
+    FIXME: Return updated record
     """
-    def update_movie(self, id: int, movie,) -> Movie|NoReturn:
+    def update_movie(self, id: int, movie,) -> None|NoReturn:
         try:
-            movie = self.__movie_repository.update_by_id(id, movie)
-            return movie
+            self.__movie_repository.update_by_id(id, movie)
+            return
         except Movie.DoesNotExist:
             raise NotFound(detail="Movie not found")
     
     def delete_movie(self, id: int) -> int|NoReturn:
         try:
             self.__movie_repository.delete_by_id(id)
+            # TODO: delete the movie from file system too
 
             return id
         
