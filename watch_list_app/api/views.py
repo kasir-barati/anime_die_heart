@@ -67,9 +67,9 @@ class GetUpdateDeleteWatchList(APIView):
         return Response({"id": id, "detail": "Updated"})
     
     def delete(self, req: Request, id: int):
-        movie = self.__movie_service.delete_movie(id)
+        self.__movie_service.delete_movie(id)
 
-        return Response({"id": id})
+        return Response({"id": id, "detail": "Deleted"})
 
 
 class UploadMovie(APIView):
