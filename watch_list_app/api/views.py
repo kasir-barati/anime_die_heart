@@ -1,113 +1,87 @@
-from rest_framework.exceptions import bad_request
-from django.http import StreamingHttpResponse
-from wsgiref.util import FileWrapper
+from rest_framework.views import APIView
+from rest_framework.request import Request
 from rest_framework.exceptions import NotFound
-from zoneinfo import ZoneInfo
+from rest_framework.response import Response
 from rest_framework import status
 from django.core.files import File
-import datetime
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework.request import Request
-from ..models import Movie
 from .serializers import MovieSerializer
 from .serializers import UploadMovieSerializer
-"""
-IDK but my gut tells me how Python work is at odds with its documentation. 
-This is just my Opinion.
-Here it says use relative imports: https://peps.python.org/pep-0328/
-But here it defines another rule: https://docs.python.org/3.9/tutorial/modules.html#intra-package-references
-"""
-from shared.save_uploaded_file import save_uploaded_file
+from .services import MovieService
 
 
-"""
-Its default value is GET
-Note: If you do not use this decorator it won't convert your 
-python Dictionary into a valid JSON data
-"""
-@api_view(["GET"])
-def movies_list(req: Request) -> Response:
-    movies = Movie.objects.all()
-    serialized_movies = MovieSerializer(movies, many=True)
+class WatchList(APIView):
+    def __init__(self) -> None:
+        super().__init__()
+        self.__movie_service = MovieService()
 
-    return Response(serialized_movies.data)
+    def get(self, req: Request, format=None) -> Response:
+        movies = self.__movie_service.get_all()
+        serialized_movies = MovieSerializer(movies, many=True)
 
-
-@api_view(["GET"])
-def movie_details(req: Request, id: int) -> Response:
-    movie = Movie.objects.get(pk=id)
-
-    if movie == None:
-        raise NotFound(detail="Movie not found")
-
-    serialized_movie = MovieSerializer(movie)
-
-    return Response(serialized_movie.data)
+        return Response(serialized_movies.data)
 
 
-@api_view(["GET"])
-def stream_movie(req: Request, id: int) -> StreamingHttpResponse:
-    movie = Movie.objects.get(pk=id)
-    
-    if movie == None:
-        raise NotFound(detail="Movie not found")
-
-    file_binary = open(movie.file_name, "rb")
-    converted_iterable_file = FileWrapper(file_binary)
-    response = StreamingHttpResponse(converted_iterable_file)
-
-    return response
+class GetUpdateDeleteWatchList(APIView):
+    def __init__(self) -> None:
+        super().__init__()
+        self.__movie_service = MovieService()
 
 
-@api_view(["PATCH"])
-def update_created_movie(req: Request, id: int) -> Response:
     """
     Wrong usage:
-    This is note NestJS
-    - req.body
-    - serialized_request_body = MovieSerializer(req.data)
+    ======================1=======================
+    No result even due data is in database
+
+    movie = self.__movie_service.get_object(id)
+    serialized_movie = MovieSerializer(data=movie)
+    serialized_movie.is_valid()
+    =======================2=======================
+    AssertionError: Cannot call `.is_valid()` as no `data=` keyword argument was passed when instantiating the serializer instance.
+
+    movie = self.__movie_service.get_object(id)
+    serialized_movie = MovieSerializer(movie)
+    serialized_movie.is_valid()
     """
-    # serialized_request_body = UpdateCreatedMovie(data=req.data)
-    # movie = Movie.objects.filter(pk=id).update(
-    #     name=serialized_request_body.name,
-    #     description=serialized_request_body.description,
-    #     active=serialized_request_body.active
-    # )
+    def get(self, req: Request, id: int,):
+        movie = self.__movie_service.get_object(id)
+        serialized_movie = MovieSerializer(movie)
 
-    # serialized_movie = MovieSerializer(movie)
-    # response = Response(serialized_movie.data)
-    # return response
-    pass
+        return Response(serialized_movie.data)
+    
+    def patch(self, req: Request, id: int,):
+        serialized_request_body = MovieSerializer(data=req.data)
+        movie = self.__movie_service.update_movie(id, serialized_request_body)
+
+        serialized_movie = MovieSerializer(movie)
+        return Response(serialized_movie.data)
+    
+    def delete(self, req: Request, id: int):
+        movie = self.__movie_service.delete_movie(id)
+
+        serialized_movie = MovieSerializer(movie)
+        return Response(serialized_movie.data)
 
 
-@api_view(["POST"])
-def upload_movie(req: Request) -> Response:
-    if 'file' not in req.FILES:
-        return bad_request(req, 'Please select a file')
+class UploadMovie(APIView):
+    def __init__(self) -> None:
+        super().__init__()
+        self.__movie_service = MovieService()
 
-    serialized_movie = UploadMovieSerializer(data=req.data)
-    """
-    Wrong usage
-    <MultiValueDict: {'file': [<InMemoryUploadedFile: Untitled.png (image/png)>]}>
-    req.FILES.file
-    """
-    sent_file: File = req.FILES['file']
-    saved_file_name = save_uploaded_file(sent_file)
+    def post(self, req: Request):
+        serialized_movie = UploadMovieSerializer(data=req.data)
+        serialized_movie.is_valid(raise_exception=True)
+        """
+        Wrong usage
+        <MultiValueDict: {'file': [<InMemoryUploadedFile: Untitled.png (image/png)>]}>
+        req.FILES.file
+        """
 
-    # Timezone is really a hard thing to deal. So I decided to keep it in zero timezone
-    now = datetime.datetime.now(tz=ZoneInfo("Etc/GMT"))
-    created_move = Movie.objects.create(
-        name=sent_file.name,
-        description=f"File uploaded at {now}",
-        active=True,
-        file_name=saved_file_name
-    )
-    created_move.save()
+        sent_file: File = req.data['file']
+        created_movie = self.__movie_service.upload_file(sent_file)
 
-    serialized_movie = MovieSerializer(created_move)
-    return Response(
-        serialized_movie.data, 
-        status=status.HTTP_201_CREATED
-    )
+        serialized_movie = MovieSerializer(created_movie)
+        return Response(
+            serialized_movie.data, 
+            status=status.HTTP_201_CREATED
+        )
 
