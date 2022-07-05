@@ -49,8 +49,17 @@ class GetUpdateDeleteWatchList(APIView):
         return Response(serialized_movie.data)
     
     def patch(self, req: Request, id: int,):
-        serialized_request_body = MovieSerializer(data=req.data)
-        movie = self.__movie_service.update_movie(id, serialized_request_body)
+        """
+        I could not use same serializer for update. I tried:
+            - MovieSerializer(data=req.data, required=False)
+            - MovieSerializer(data=req.data)
+        """
+        serialized_request_body = MovieSerializer(data=req.data, partial=True)
+        serialized_request_body.is_valid(raise_exception=True)
+        movie = self.__movie_service.update_movie(
+            id, 
+            serialized_request_body.data
+        )
 
         serialized_movie = MovieSerializer(movie)
         return Response(serialized_movie.data)
@@ -58,8 +67,7 @@ class GetUpdateDeleteWatchList(APIView):
     def delete(self, req: Request, id: int):
         movie = self.__movie_service.delete_movie(id)
 
-        serialized_movie = MovieSerializer(movie)
-        return Response(serialized_movie.data)
+        return Response({"id": id})
 
 
 class UploadMovie(APIView):
