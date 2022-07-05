@@ -32,6 +32,9 @@ class GetUpdateDeleteWatchList(APIView):
     ======================1=======================
     No result even due data is in database
 
+    Response from someone in discord: 
+        "you are supposed to pass a dict for data, not a model instance"
+
     movie = self.__movie_service.get_object(id)
     serialized_movie = MovieSerializer(data=movie)
     serialized_movie.is_valid()
@@ -44,6 +47,7 @@ class GetUpdateDeleteWatchList(APIView):
     """
     def get(self, req: Request, id: int,):
         movie = self.__movie_service.get_object(id)
+        # serialized_movie = MovieSerializer(instance=movie)
         serialized_movie = MovieSerializer(movie)
 
         return Response(serialized_movie.data)

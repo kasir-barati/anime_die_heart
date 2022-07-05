@@ -38,6 +38,18 @@
     - `unauthenticated` request, default value of `req.user` is `django.contrib.auth.models.AnonymousUser`
   - ## `req.auth`
     - `unauthenticated` => `None`
+- ## `req.meta`
+  - A dictionary containing all available HTTP headers.
+  - Available headers depend on the client and server. e.x.:
+    - `CONTENT_LENGTH`
+    - `CONTENT_TYPE`
+    - `HTTP_ACCEPT`
+    - `HTTP_HOST`
+    - `HTTP_USER_AGENT`
+    - `QUERY_STRING`
+    - `REQUEST_METHOD`
+    - `SERVER_NAME`
+    - `SERVER_PORT`
 - ## `req.method`
   - Uppercased string representation of HTTP method.
 - ## `rea.stream`

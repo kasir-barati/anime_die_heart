@@ -6,9 +6,9 @@ from ..models import Movie
 
 class MovieSerializer(serializers.ModelSerializer):
     """
-    This can help but it is require too much work and decrease maintainability 
+    FIXME: There is a bad bug in DRF. I will fix this issue later
+    https://github.com/encode/django-rest-framework/issues/1830#issuecomment-1175047486
     """
-    # description = serializers.CharField(required=False)
     class Meta:
         model = Movie
         read_only_fields = ('id', 'file_name',)
