@@ -99,3 +99,20 @@ class UploadMovie(APIView):
             status=status.HTTP_201_CREATED
         )
 
+class StreamMovie(APIView):
+    def __init__(self) -> None:
+        super().__init__()
+        self.__movie_service = MovieService()
+
+
+    def get(self, req: Request, id: int):
+        movie = self.__movie_service.get_object(id)
+        range_header = req.META.get('HTTP_RANGE', '').strip()
+
+        response = self.__movie_service.stream_video(
+            range_header=range_header,
+            path=movie.file_name
+        )
+
+        return response
+

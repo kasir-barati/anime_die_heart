@@ -61,7 +61,34 @@ class MovieService:
             # TODO: delete the movie from file system too
 
             return id
-        
+
         except Movie.DoesNotExist:
             raise NotFound(detail="Movie not found")
+
+    def stream_video(
+            self, 
+            range_header: str, 
+            path: str) -> StreamingHttpResponse:
+        range_re = re.compile(r'bytes\s*=\s*(\d+)\s*-\s*(\d*)', re.I)
+        range_match = range_re.match(range_header)
+        size: int = os.path.getsize(path)
+        content_type, encoding = mimetypes.guess_type(path)
+        content_type = content_type or 'application/octet-stream'
+
+        if range_match:
+            first_byte, last_byte = range_match.groups()
+            first_byte = int(first_byte) if first_byte else 0
+            last_byte = int(last_byte) if last_byte else size - 1
+            if last_byte >= size:
+                last_byte = size - 1
+            length = last_byte - first_byte + 1
+            response = StreamingHttpResponse(RangeFileWrapper(open(path, 'rb'), offset=first_byte, length=length), status=206, content_type=content_type)
+            response['Content-Length'] = str(length)
+            response['Content-Range'] = 'bytes %s-%s/%s' % (first_byte, last_byte, size)
+        else:
+            response = StreamingHttpResponse(FileWrapper(open(path, 'rb')), content_type=content_type)
+            response['Content-Length'] = str(size)
+
+        response['Accept-Ranges'] = 'bytes'
+        return response
 
