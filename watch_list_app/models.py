@@ -1,3 +1,4 @@
+from typing import Optional
 from django.db import models
 from django.db.models.indexes import Index
 from django.contrib.postgres.fields import ArrayField
@@ -10,7 +11,8 @@ class Movie(models.Model):
     active: bool = models.BooleanField(default=True)
     file_name: str = models.CharField(max_length=255, null=False)
     resized_files_absolute_path: list[str] = ArrayField(
-        models.CharField()
+        models.CharField(max_length=500),
+        null=True
     )
 
     class Meta:
