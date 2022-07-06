@@ -1,5 +1,6 @@
 import os
 import re
+import math
 import mimetypes
 from wsgiref.util import FileWrapper
 from typing import NoReturn
@@ -10,7 +11,10 @@ from django.http.response import StreamingHttpResponse
 from ..utils.range_file_wrapper import RangeFileWrapper
 from .repositories import MovieRepository
 from ..models import Movie
-from shared.save_uploaded_file import save_uploaded_file
+from ..utils.resize_video import resize_video
+from ..utils.save_uploaded_file import prepend_random_string_to_filename
+from ..utils.save_uploaded_file import save_uploaded_file
+from anime_die_heart.settings import MEDIA_ROOT
 
 
 class MovieService:
@@ -27,7 +31,19 @@ class MovieService:
         return self.__movie_repository.find_all()
     
     def upload_file(self, file: File):
-        saved_file_name = save_uploaded_file(file)
+        random_filename = self.__generate_random_filename(file.name)
+        original_video_absolute_path = os.path.join(
+            MEDIA_ROOT, 
+            random_filename,
+        )
+        save_uploaded_file(
+            absolute_path=original_video_absolute_path,
+            file=file,
+        )
+        resized_files_absolute_path = self.__resize_video(
+            original_video_absolute_path=original_video_absolute_path,
+        )
+
         # Timezone is really a hard thing to deal. So I decided to keep it in zero timezone
         # Read USE_TZ and generate time based on this setting
         now = timezone.now()
@@ -35,9 +51,53 @@ class MovieService:
             name=file.name,
             description=f"File uploaded at {now}",
             active=True,
-            file_name=saved_file_name
+            file_name=original_video_absolute_path,
+            resized_files_absolute_path=resized_files_absolute_path
         )
+
         return created_movie
+
+    def __generate_random_filename(
+            self,
+            filename: str) -> str:
+        random_file_name = prepend_random_string_to_filename(
+            filename
+        )
+
+        return random_file_name
+
+    def __resize_video(
+            self, 
+            original_video_absolute_path: str,) -> list[str]:
+        base_path = os.path.dirname(
+            original_video_absolute_path,
+        )
+        original_video_size = os.path.getsize(
+            original_video_absolute_path,
+        )
+        filename_with_extension = os.path.basename(
+            original_video_absolute_path,
+        )
+        extension, filename = os.path.splitext(
+            filename_with_extension,
+        )
+        one_third_video_size_filename = \
+            self.__generate_random_filename(filename) \
+            + 'one_third' \
+            + extension
+        one_third_video_size_filename = os.path.join(
+            base_path,
+            one_third_video_size_filename
+        )
+        resize_video(
+            video_absolute_path=original_video_absolute_path,
+            output_file_absolute_path=one_third_video_size_filename,
+            size_upper_bound=math.ceil(original_video_size/3),
+        )
+
+        # Do more converting
+
+        return [one_third_video_size_filename]
     
     """
     Based on onion architecture layer I decided to annotate
