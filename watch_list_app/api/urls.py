@@ -6,7 +6,6 @@ from .views import StreamMovie
 
 
 urlpatterns = [
-    # BUG: You cannot do this in the function based view. more info in those links
     path('', WatchList.as_view(), name='movies-list'),
     path(
         '<int:id>', 
