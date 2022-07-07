@@ -107,12 +107,11 @@ class StreamMovie(APIView):
 
     def get(self, req: Request, id: int):
         movie = self.__movie_service.get_object(id)
-        range_header = req.META.get('HTTP_RANGE', '').strip()
 
-        response = self.__movie_service.stream_video(
-            range_header=range_header,
-            path=movie.file_name
+        media_url = self.__movie_service.stream_video(
+            req,
+            movie.mpd_file_absolute_path
         )
 
-        return response
+        return Response({"detail": media_url})
 
