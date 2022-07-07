@@ -1,8 +1,9 @@
 from django.http import JsonResponse
+from django.http.request import HttpRequest
 from .models import Movie
 
 # Create your views here.
-def movie_list(request):
+def movie_list(req: HttpRequest) -> JsonResponse:
     # This will returns a QuerySet
     # <QuerySet [<Movie: Get the right job in Germany>, <Movie: Do the coding challenge>]>
     movies = Movie.objects.all()
@@ -21,7 +22,12 @@ def movie_list(request):
     return response
 
 
-def movie_details(request, id):
+"""
+Interesting enough
+I do not need to convert id. I just need to tell django its type in the urls file.
+I really fall in love with Django
+"""
+def movie_details(req: HttpRequest, id: int) -> JsonResponse:
     movie = Movie.objects.get(pk=id)
     # This print will prints "Get the right job in Germany" because of __str__
     print(movie)

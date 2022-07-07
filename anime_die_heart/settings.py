@@ -9,8 +9,10 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+from shared.get_env_value import get_env_value
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'watch_list_app'
 ]
 
@@ -76,8 +79,21 @@ WSGI_APPLICATION = 'anime_die_heart.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': get_env_value(
+            'POSTGRES_DB', 
+            '.postgresql.env',
+        ),
+        'USER': get_env_value(
+            'POSTGRES_USER',
+            '.postgresql.env',
+        ),
+        'PASSWORD': get_env_value(
+            'POSTGRES_PASSWORD',
+            '.postgresql.env'
+        ),
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -117,8 +133,22 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+RABBITMQ_USER = get_env_value('RABBITMQ_DEFAULT_USER', '.rabbitmq.env')
+RABBITMQ_PASS = get_env_value('RABBITMQ_DEFAULT_PASS', '.rabbitmq.env')
+RABBITMQ_VHOST = get_env_value('RABBITMQ_DEFAULT_VHOST', '.rabbitmq.env')
+broker = f"pyamqp://{RABBITMQ_USER}:{RABBITMQ_PASS}@localhost/{RABBITMQ_VHOST}"
+CELERY_BROKER_URL = broker
+CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Etc/GMT'
+CELERY_BEAT_SCHEDULE = {}
