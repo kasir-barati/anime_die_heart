@@ -144,6 +144,8 @@ https://github.com/gnulnx/django-mongolog
        - Dynamic Adaptive Streaming over HTTP (DASH)
        - MPEG-DASH
        - An adaptive bitrate streaming technique that enables high-quality streaming of media content over the Internet delivered from conventional HTTP web servers.
+       - ### **[Just keep this in mind](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/discussions/92#discussion-4201314)**
+         - Due to this I decided to merge my two different solutions with each other; Save file in MongoDB but I am and was not sure if this will work as I expect. So for now I just stopped.
 - [First Reference](https://github.com/wagtail/wagtail)
 - [Second Reference](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming)
 - [Read more about Adaptive bitrate streaming](https://en.wikipedia.org/wiki/Adaptive_bitrate_streaming)
