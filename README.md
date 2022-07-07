@@ -18,6 +18,8 @@
 - `python3 manage.py runserver`
 - endpoints:
   - **Postman file is included**
+  - Import them in your postman app.
+  - I deliberately did not use environment variables to keep it so simple. However I proclaim that it is the right way to live and use postman. I fervently belief that postman is best app to develop RESTful API.
 
 # Steps to create project
 
