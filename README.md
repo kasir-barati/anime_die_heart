@@ -4,12 +4,19 @@
 
 # Run app
 
-- python3 manage.py runserver
-- I still do not know how to recreate the venv since it should be ignored by git
+- `docker-compose -f postgres.docker-compose.yml up -d`
+  - To shutdown container and clean everything
+    - `docker-compose -f postgres.docker-compose.yml down --remove-orphans`
+    - `docker volume prune -f`
+    - `docker network prune -f`
+  - To shutdown container and keep you data
+    - `docker-compose -f postgres.docker-compose.yml down`
+- `docker-compose -f rabbitmq.docker-compose.yml up -d`
+- `celery -A anime_die_heart worker -l INFO`
+- recreate the venv
+- `python3 manage.py runserver`
 - endpoints:
-  - http://localhost:8000/admin
-  - http://localhost:8000/movies
-  - http://localhost:8000/movies/:id
+  - **Postman file is included**
 
 # Steps to create project
 
@@ -27,6 +34,7 @@
 - python3 manage.py runserver
 - We need to apply some migrations because we already have our database
   - python3 manage.py migrate
+    - [Please do not edit them or remove them manually](https://stackoverflow.com/a/37097258/8784518). Unless you did not apply them in prod env.
 - Now we create super user:
   - python3 manage.py createsuperuser
 

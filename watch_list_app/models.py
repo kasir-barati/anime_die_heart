@@ -1,5 +1,8 @@
+from typing import Optional
 from django.db import models
 from django.db.models.indexes import Index
+from django.contrib.postgres.fields import ArrayField
+
 
 # Create your models here.
 class Movie(models.Model):
@@ -7,6 +10,10 @@ class Movie(models.Model):
     description: str = models.CharField(max_length=400, null=False)
     active: bool = models.BooleanField(default=True)
     file_name: str = models.CharField(max_length=255, null=False)
+    resized_files_absolute_path: list[str] = ArrayField(
+        models.CharField(max_length=500),
+        null=True
+    )
 
     class Meta:
         db_table: str = 'movies'
