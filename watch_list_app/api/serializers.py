@@ -12,7 +12,13 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         read_only_fields = ('id', 'file_name',)
-        fields = ['id', 'name', 'description', 'active', 'file_name']
+        fields = [
+            'id', 
+            'name', 
+            'description', 
+            'active', 
+            'file_name',
+        ]
 
 class UploadMovieSerializer(serializers.Serializer):
     file: FileField = serializers.FileField(

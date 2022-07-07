@@ -40,9 +40,13 @@ class MovieService:
             absolute_path=original_video_abs_path,
             file=file,
         )
-        resized_file_absolute_path = random_filename(
+        resized_filename = random_filename(
             file.name,
             'one_third'
+        )
+        resized_file_absolute_path = os.path.join(
+            MEDIA_ROOT, 
+            resized_filename,
         )
         celery_resize_file.apply_async([
             original_video_abs_path,
