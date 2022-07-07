@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
+from django.conf.urls.static import static
+from django.conf import settings
+from .settings import DEBUG
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,3 +26,7 @@ urlpatterns = [
     # path('movies/', include('watch_list_app.urls')),
     path('movies/', include('watch_list_app.api.urls')),
 ]
+
+if DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

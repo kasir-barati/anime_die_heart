@@ -14,9 +14,12 @@
 - `docker-compose -f rabbitmq.docker-compose.yml up -d`
 - `celery -A anime_die_heart worker -l INFO`
 - recreate the venv
+- `pip install -r requirements.txt`
 - `python3 manage.py runserver`
 - endpoints:
   - **Postman file is included**
+  - Import them in your postman app.
+  - I deliberately did not use environment variables to keep it so simple. However I proclaim that it is the right way to live and use postman. I fervently belief that postman is best app to develop RESTful API.
 
 # Steps to create project
 
@@ -111,7 +114,44 @@ https://github.com/gnulnx/django-mongolog
   - **Django is designed for short-lived requests**.
   - :warning:Streaming responses will tie a worker process for the entire duration of the response. maybe low performance.
   - Generally speaking, you should perform expensive tasks outside of the request-response cycle, rather than resorting to a streamed response.
+- Adaptive bitrate streaming
+  - A technique
+  - Stream multimedia over network.
+  - In old medieval age most video or audio streaming technologies utilized streaming protocols:
+    - RTP with RTSP
+  - In contemporary modern generation adaptive streaming technologies are almost exclusively based on HTTP and designed to work efficiently over large distributed HTTP networks such as the Internet.
+  - Detects in real time:
+    - user's Bandwidth
+    - user's CPU capacity
+      - Adjusting the quality of the media stream accordingly.
+  - An encoder which encode a single source media (video or audio) to multiple bit rates.
+  - Client switches between streaming the different encodings depending on available resources
+  - Result:
+    - Very little buffering
+    - Fast start time
+    - Good experience for both high-end and low-end connections.
+  - A method of video streaming over HTTP where the source content is encoded at multiple bit rates.
+  - How it works?
+    1. Client downloads a manifest file that describes the available stream segments and their respective bit rates.
+    2. During stream start-up, client usually requests the segments from the lowest bit rate stream.
+    3. If the client finds that the network throughput is greater than the bit rate of the downloaded segment, then it will request a higher bit rate segment.
+    4. Client finds that the network throughput has deteriorated, it will request a lower bit rate segment.
+    5. An adaptive bitrate (ABR) algorithm **in the client** performs the key function of deciding which bit rate segments to download, based on the current state of the network.
+       - Several types of ABR algorithms are in commercial use:
+         - throughput-based algorithms (throughput rule in dash.js)
+         - buffer-based algorithms (BOLA in dash.js)
+         - hybrid algorithms (DYNAMIC in dash.js).
+  - `pip install python-ffmpeg-video-streaming`
+    1. In our case we need to pass the saved file to the package
+    2. Create DASH file
+       - Dynamic Adaptive Streaming over HTTP (DASH)
+       - MPEG-DASH
+       - An adaptive bitrate streaming technique that enables high-quality streaming of media content over the Internet delivered from conventional HTTP web servers.
+       - ### **[Just keep this in mind](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/discussions/92#discussion-4201314)**
+         - Due to this I decided to merge my two different solutions with each other; Save file in MongoDB but I am and was not sure if this will work as I expect. So for now I just stopped.
 - [First Reference](https://github.com/wagtail/wagtail)
+- [Second Reference](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming)
+- [Read more about Adaptive bitrate streaming](https://en.wikipedia.org/wiki/Adaptive_bitrate_streaming)
 
 # CRUD in Django:
 

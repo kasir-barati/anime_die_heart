@@ -1,20 +1,16 @@
 import os
-import re
-import mimetypes
-from wsgiref.util import FileWrapper
 from typing import NoReturn
 from rest_framework.exceptions import NotFound
+from rest_framework.request import Request
 from django.core.files import File
 from django.utils import timezone
 from django.core.files import File
-from django.http.response import StreamingHttpResponse
-from .tasks import celery_resize_file
-from ..utils.range_file_wrapper import RangeFileWrapper
+from .tasks import celery_generate_mpd
 from ..utils.save_uploaded_file import save_uploaded_file
 from .repositories import MovieRepository
 from ..models import Movie
 from ..utils.save_uploaded_file import random_filename
-from anime_die_heart.settings import MEDIA_ROOT
+from anime_die_heart.settings import MEDIA_ROOT, MEDIA_URL
 
 
 class MovieService:
@@ -40,18 +36,25 @@ class MovieService:
             absolute_path=original_video_abs_path,
             file=file,
         )
-        resized_filename = random_filename(
+        mpd_filename = random_filename(
             file.name,
-            'one_third'
         )
-        resized_file_absolute_path = os.path.join(
+        pure_filename, extension = os.path.splitext(mpd_filename)
+        mpd_file_absolute_path = os.path.join(
             MEDIA_ROOT, 
-            resized_filename,
+            pure_filename + '.mpd',
         )
-        celery_resize_file.apply_async([
+        """
+        FIXME: make mpd_file_absolute_path null for this record
+        1. Retry X time
+        2. If it exceeded X then push it into a new unprocessed_error_queue or email someone or log it
+        3. Find this record in database and set mpd_file_absolute_path equal to null
+            3.1. Push it ino another queue named error_queue for more process
+            3.2. Notify someone to check what is going and do something for those un-resized movies
+        """
+        celery_generate_mpd.apply_async([
             original_video_abs_path,
-            resized_file_absolute_path,
-            3,
+            mpd_file_absolute_path,
         ])
 
         # Timezone is really a hard thing to deal. So I decided to keep it in zero timezone
@@ -62,7 +65,7 @@ class MovieService:
             description=f"File uploaded at {now}",
             active=True,
             file_name=original_video_abs_path,
-            resized_files_absolute_path=[resized_file_absolute_path]
+            mpd_file_absolute_path=mpd_file_absolute_path
         )
 
         return created_movie
@@ -95,28 +98,8 @@ class MovieService:
 
     def stream_video(
             self, 
-            range_header: str, 
-            path: str) -> StreamingHttpResponse:
-        range_re = re.compile(r'bytes\s*=\s*(\d+)\s*-\s*(\d*)', re.I)
-        range_match = range_re.match(range_header)
-        size: int = os.path.getsize(path)
-        content_type, encoding = mimetypes.guess_type(path)
-        content_type = content_type or 'application/octet-stream'
-
-        if range_match:
-            first_byte, last_byte = range_match.groups()
-            first_byte = int(first_byte) if first_byte else 0
-            last_byte = int(last_byte) if last_byte else size - 1
-            if last_byte >= size:
-                last_byte = size - 1
-            length = last_byte - first_byte + 1
-            response = StreamingHttpResponse(RangeFileWrapper(open(path, 'rb'), offset=first_byte, length=length), status=206, content_type=content_type)
-            response['Content-Length'] = str(length)
-            response['Content-Range'] = 'bytes %s-%s/%s' % (first_byte, last_byte, size)
-        else:
-            response = StreamingHttpResponse(FileWrapper(open(path, 'rb')), content_type=content_type)
-            response['Content-Length'] = str(size)
-
-        response['Accept-Ranges'] = 'bytes'
-        return response
+            req: Request,
+            mpd_file_abs_path: str) -> str:
+        filename = os.path.basename(mpd_file_abs_path)
+        return req.get_host() + MEDIA_URL + filename
 

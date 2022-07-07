@@ -10,11 +10,7 @@ class Movie(models.Model):
     description: str = models.CharField(max_length=400, null=False)
     active: bool = models.BooleanField(default=True)
     file_name: str = models.CharField(max_length=255, null=False)
-    resized_files_absolute_path: list[str] = ArrayField(
-        models.CharField(max_length=500),
-        null=True
-    )
-
+    mpd_file_absolute_path: str = models.CharField(max_length=500)
     class Meta:
         db_table: str = 'movies'
         indexes: Index = [
