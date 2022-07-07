@@ -21,7 +21,7 @@ def read_env_file(path: str) -> dict[str, str]:
         lines = env_file.readlines()
         for line in lines:
             line = line.strip()
-            if len(line) == 0:
+            if len(line) == 0 or line.startswith(('#', ';')):
                 continue
 
             key_value = line.split('=', maxsplit=2)

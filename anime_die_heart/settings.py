@@ -11,18 +11,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 from pathlib import Path
-from django.core.exceptions import ImproperlyConfigured
-from shared.read_env import read_env_files
+from shared.get_env_value import get_env_value
 
-
-def get_env_value(env_variable: str) -> str:
-    try:
-        path = os.path.join(os.getcwd(), '.postgresql.env')
-        env_value = read_env_files([path])[env_variable]
-        return env_value
-    except KeyError:
-        error_msg = f'Set the {env_variable} environment variable'
-        raise ImproperlyConfigured(error_msg)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -90,9 +80,18 @@ WSGI_APPLICATION = 'anime_die_heart.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': get_env_value('POSTGRES_DB'),
-        'USER': get_env_value('POSTGRES_USER'),
-        'PASSWORD': get_env_value('POSTGRES_PASSWORD'),
+        'NAME': get_env_value(
+            'POSTGRES_DB', 
+            '.postgresql.env',
+        ),
+        'USER': get_env_value(
+            'POSTGRES_USER',
+            '.postgresql.env',
+        ),
+        'PASSWORD': get_env_value(
+            'POSTGRES_PASSWORD',
+            '.postgresql.env'
+        ),
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -141,3 +140,15 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+RABBITMQ_USER = get_env_value('RABBITMQ_DEFAULT_USER', '.rabbitmq.env')
+RABBITMQ_PASS = get_env_value('RABBITMQ_DEFAULT_PASS', '.rabbitmq.env')
+RABBITMQ_VHOST = get_env_value('RABBITMQ_DEFAULT_VHOST', '.rabbitmq.env')
+broker = f"pyamqp://{RABBITMQ_USER}:{RABBITMQ_PASS}@localhost/{RABBITMQ_VHOST}"
+CELERY_BROKER_URL = broker
+CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Etc/GMT'
+CELERY_BEAT_SCHEDULE = {}

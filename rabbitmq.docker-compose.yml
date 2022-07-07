@@ -15,8 +15,3 @@ services:
     # We should specify -h/--hostname explicitly for each daemon so
     # that we don't get a random hostname and can keep track of our data
     hostname: anime_die_heart_rabbitmq
-    volumes:
-      - anime_die_heart_rabbitmq:/var/lib/postgresql/data
-
-volumes:
-  anime_die_heart_rabbitmq:

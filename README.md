@@ -11,6 +11,8 @@
     - `docker network prune -f`
   - To shutdown container and keep you data
     - `docker-compose -f postgres.docker-compose.yml down`
+- `docker-compose -f rabbitmq.docker-compose.yml up -d`
+- `celery -A anime_die_heart worker -l INFO`
 - recreate the venv
 - `python3 manage.py runserver`
 - endpoints:

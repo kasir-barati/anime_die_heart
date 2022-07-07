@@ -3,7 +3,7 @@
 ```py
 from celery import Celery
 
-app = Celery('tasks', broker='pyamqp://guest@localhost//')
+app = Celery('tasks', broker='pyamqp://rabbitmq:123456@localhost//')
 
 @app.task
 def add(x, y):
@@ -98,3 +98,49 @@ def add(x, y):
 - Setup conf:
   - Directly on the app
   - Use a dedicated configuration module.
+
+# Using Celery with Django
+
+- Define an instance of the Celery library (called an "app")
+  - Create a file in `project_name/project_name/celery.py`
+- Import this app in your `project_name/project_name/__init__.py` module.
+  - App is loaded when Django starts so that the `@shared_task` decorator (mentioned later) will use it:
+- # Calling Tasks
+  - The API defines a standard set of execution options, as well as three methods:
+    - `apply_async(args[, kwargs[, …]])`
+      - Sends a task message.
+    - `delay(*args, **kwargs)`
+      - Shortcut to send a task message, but doesn’t support execution options.
+    - `calling (__call__)`
+      - `add(2, 2)`
+      - Task will not be executed by a worker, but in the current process instead (a message won’t be sent).
+  - Cheat sheet
+    - `T.delay(arg, kwarg=value)`
+      - Star arguments shortcut to `.apply_async`. (`.delay(*args, **kwargs)` calls .`apply_async(args, kwargs)`).
+    - `T.apply_async((arg,), {'kwarg': value})`
+    - `T.apply_async(countdown=10)`
+      - executes in 10 seconds from now.
+    - `T.apply_async(eta=now + timedelta(seconds=10))`
+      - executes in 10 seconds from now, specified using eta
+    - `T.apply_async(countdown=60, expires=120)`
+      - executes in one minute from now, but expires after 2 minutes.
+    - `T.apply_async(expires=now + timedelta(days=2))`
+      - expires in 2 days, set using datetime.
+- # Canvas: Designing Work-flows
+  - ## We need to define tasks in a specific order, so we should use these tools
+    - ### Signatures
+      - A `signature()` wraps the arguments, keyword arguments, and execution options of a single task invocation in a way such that it can be passed to functions or even serialized and sent across the wire.
+    - ### The Primitives
+      - Here we need `chain` to chain tasks
+      - Link together signatures so that one is called after the other
+      - Essentially forming a chain of callbacks.
+    - ### kombu.exceptions.EncodeError: Object of type TemporaryUploadedFile is not JSON serializable
+      - When we create a celery task, it serializes the arguments so that it can store the message in the queue backend (RabbitMQ, Redis, etc).
+      - The default serializer is JSON, and a binary file is not JSON-serializable.
+      - We can `base64` encode the binary file to text
+        - **But we do not do this**
+          - The size of the data increases drastically
+          - You'll be passing around potentially very large messages.
+          - With lots of large messages, you'll eventually run out of memory/space in your backend, and it will make it hard to inspect or log messages.
+      - Solution: Save the binary file somewhere, and pass a reference (filename, S3 URL, database key, etc) to the task.
+        - I did this and I will just then convert the files to lower qualities
