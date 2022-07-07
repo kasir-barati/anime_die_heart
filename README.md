@@ -14,6 +14,7 @@
 - `docker-compose -f rabbitmq.docker-compose.yml up -d`
 - `celery -A anime_die_heart worker -l INFO`
 - recreate the venv
+- `pip install -r requirements.txt`
 - `python3 manage.py runserver`
 - endpoints:
   - **Postman file is included**
